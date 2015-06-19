@@ -49,13 +49,13 @@ public class RecordActivity extends ImmersiveActivity implements RecordView, Ada
         }
 
 
-       /* if (savedInstanceState == null) {
+       if (savedInstanceState == null) {
             recordFragment = RecordFragment.getInstance();
             getFragmentManager().beginTransaction()
                     .replace(R.id.container, recordFragment)
                     .commit();
-        } */
-        recordFragment = new RecordFragment();
+        }
+        //recordFragment = (RecordFragment) getFragmentManager().findFragmentById(R.id.fragment)
 
     }
 

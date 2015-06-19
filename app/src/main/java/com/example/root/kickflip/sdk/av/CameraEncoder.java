@@ -1026,9 +1026,7 @@ public class CameraEncoder implements SurfaceTexture.OnFrameAvailableListener, R
     }
 
     private void postCameraOpenedEvent(Parameters params) {
-      //  if (mEventBus != null) {
-      //      mEventBus.post(new CameraOpenedEvent(params));
-      //  }
+
         //TODO postCameraOpen listener
     }
 

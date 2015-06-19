@@ -1,4 +1,4 @@
-/*
+
 package com.example.root.kickflip.sdk.presentation.views.fragment;
 
 import android.annotation.SuppressLint;
@@ -17,16 +17,12 @@ import com.example.root.kickflip.R;
 import com.example.root.kickflip.sdk.presentation.mvp.presenters.RecordPresenter;
 import com.example.root.kickflip.sdk.presentation.views.GLCameraEncoderView;
 
-*/
-/**
- *
- *//*
 
 public class RecordFragmentCopy extends Fragment {
-    */
-/**
+
+    /**
      * LOG_LOG_TAG
-     *//*
+     */
 
     private final static String LOG_TAG = "RecordFragment"; //getClass().getSimpleName();
 
@@ -81,7 +77,7 @@ public class RecordFragmentCopy extends Fragment {
         if (VERBOSE) Log.i(LOG_TAG, "onCreate");
         super.onCreate(savedInstanceState);
 
-            setupRecord();
+          //  setupRecord();
 
     }
 
@@ -113,8 +109,8 @@ public class RecordFragmentCopy extends Fragment {
                 recordButton.setBackgroundResource(R.drawable.red_dot_stop);
 
             }
-            setupFilterSpinner(root);
-            setupCameraFlipper(root);
+         //   setupFilterSpinner(root);
+         //   setupCameraFlipper(root);
         } else
             root = new View(container.getContext());
         return root;
@@ -122,11 +118,5 @@ public class RecordFragmentCopy extends Fragment {
 
 
 
-
-
-
-
-
-
 }
-*/
+

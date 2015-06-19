@@ -32,6 +32,7 @@ public class RecordFragment extends Fragment {
         if (VERBOSE) Log.i(LOG_TAG, "construct");
     }
 
+
     public static RecordFragment getInstance() {
         if (mFragment == null) {
             // We haven't yet created a RecordFragment instance
@@ -71,10 +72,15 @@ public class RecordFragment extends Fragment {
         View root;
         if (getActivity().getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
             root = inflater.inflate(R.layout.fragment_record, container, false);
+
+            if (VERBOSE) Log.i(LOG_TAG, "onCreateView mCameraView");
+
             mCameraView = (GLCameraEncoderView) root.findViewById(R.id.cameraPreview);
             mCameraView.setKeepScreenOn(true);
 
         } else
+
+            if (VERBOSE) Log.i(LOG_TAG, "onCreateView not mCameraView");
             root = new View(container.getContext());
         return root;
     }
