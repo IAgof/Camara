@@ -17,9 +17,8 @@ import com.example.root.kickflip.sdk.av.gles.EglStateSaver;
 import com.example.root.kickflip.sdk.av.gles.FullFrameRect;
 import com.example.root.kickflip.sdk.av.gles.Texture2dProgram;
 import com.example.root.kickflip.sdk.av.gles.WindowSurface;
-import com.example.root.kickflip.sdk.event.CameraOpenedEvent;
-import com.example.root.kickflip.sdk.view.GLCameraEncoderView;
-import com.example.root.kickflip.sdk.view.GLCameraView;
+import com.example.root.kickflip.sdk.presentation.views.GLCameraEncoderView;
+import com.example.root.kickflip.sdk.presentation.views.GLCameraView;
 import com.google.common.eventbus.EventBus;
 
 import java.io.File;
@@ -37,7 +36,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class CameraEncoder implements SurfaceTexture.OnFrameAvailableListener, Runnable {
     private static final String TAG = "CameraEncoder";
     private static final boolean TRACE = false;         // Systrace
-    private static final boolean VERBOSE = false;       // Lots of logging
+    private static final boolean VERBOSE = true;       // Lots of logging
 
     private enum STATE {
         /* Stopped or pre-construction */
@@ -599,7 +598,8 @@ public class CameraEncoder implements SurfaceTexture.OnFrameAvailableListener, R
                     Log.i("CameraRelease", "Opening camera and attaching to SurfaceTexture");
                 mHandler.sendMessage(mHandler.obtainMessage(MSG_REOPEN_CAMERA));
             } else {
-                Log.w("CameraRelease", "Didn't try to open camera onHAResume. rec: " + mRecording + " mSurfaceTexture ready? " + (mSurfaceTexture == null ? " no" : " yes"));
+                Log.w("CameraRelease", "Didn't try to open camera onHAResume. rec: " + mRecording +
+                        " mSurfaceTexture ready? " + (mSurfaceTexture == null ? " no" : " yes"));
             }
         }
     }
@@ -1026,12 +1026,10 @@ public class CameraEncoder implements SurfaceTexture.OnFrameAvailableListener, R
     }
 
     private void postCameraOpenedEvent(Parameters params) {
-        if (mEventBus != null) {
-            mEventBus.post(new CameraOpenedEvent(params));
-        }
+      //  if (mEventBus != null) {
+      //      mEventBus.post(new CameraOpenedEvent(params));
+      //  }
+        //TODO postCameraOpen listener
     }
 
-    public void setEventBus(EventBus eventBus) {
-        mEventBus = eventBus;
-    }
 }

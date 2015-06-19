@@ -1,20 +1,20 @@
-package com.example.root.kickflip.sdk.exception;
+package com.example.root.kickflip.sdk.presentation.exception;
 
 import java.io.IOException;
 
 /**
  * Kickflip Exception
  */
-public class KickflipException extends IOException{
+public class RecordException extends IOException{
     private String mMessage;
     private int mCode;
 
-    public KickflipException(){
+    public RecordException(){
         mMessage = "An unknown error occurred";
         mCode = 0;
     }
 
-    public KickflipException(String message, int code){
+    public RecordException(String message, int code){
         mMessage = message;
         mCode = code;
     }

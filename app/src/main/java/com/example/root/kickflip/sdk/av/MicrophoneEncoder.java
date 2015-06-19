@@ -17,7 +17,7 @@ import java.nio.ByteBuffer;
  */
 public class MicrophoneEncoder implements Runnable {
     private static final boolean TRACE = false;
-    private static final boolean VERBOSE = false;
+    private static final boolean VERBOSE = true;
     private static final String TAG = "MicrophoneEncoder";
 
     protected static final int SAMPLES_PER_FRAME = 1024;                            // AAC frame size. Audio encoder input size is a multiple of this

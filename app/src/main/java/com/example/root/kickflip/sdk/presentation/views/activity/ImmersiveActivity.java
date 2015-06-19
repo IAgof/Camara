@@ -1,4 +1,4 @@
-package com.example.root.kickflip.sdk.activity;
+package com.example.root.kickflip.sdk.presentation.views.activity;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -8,7 +8,8 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 
-import static com.example.root.kickflip.sdk.Kickflip.isKitKat;
+import com.example.root.kickflip.sdk.Util;
+
 
 /**
  * @hide
@@ -40,7 +41,7 @@ public abstract class ImmersiveActivity extends Activity {
     }
 
     private void hideSystemUi() {
-        if (!isKitKat() || !mUseImmersiveMode) {
+        if (!Util.isKitKat() || !mUseImmersiveMode) {
             getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                     WindowManager.LayoutParams.FLAG_FULLSCREEN);
         } else if (mUseImmersiveMode) {
@@ -52,7 +53,7 @@ public abstract class ImmersiveActivity extends Activity {
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
-        if (isKitKat() && hasFocus && mUseImmersiveMode) {
+        if (Util.isKitKat() && hasFocus && mUseImmersiveMode) {
             setKitKatWindowFlags();
         }
     }

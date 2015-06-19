@@ -15,7 +15,7 @@ import javax.microedition.khronos.opengles.GL10;
  */
 class CameraSurfaceRenderer implements GLSurfaceView.Renderer {
     private static final String TAG = "CameraSurfaceRenderer";
-    private static final boolean VERBOSE = false;
+    private static final boolean VERBOSE = true;
 
     private CameraEncoder mCameraEncoder;
 

@@ -1,4 +1,4 @@
-package com.example.root.kickflip.sdk.view;
+package com.example.root.kickflip.sdk.presentation.views;
 
 import android.content.Context;
 import android.util.AttributeSet;

@@ -13,7 +13,7 @@ import java.io.IOException;
 public class AudioEncoderCore extends AndroidEncoder {
 
     private static final String TAG = "AudioEncoderCore";
-    private static final boolean VERBOSE = false;
+    private static final boolean VERBOSE = true;
 
     protected static final String MIME_TYPE = "audio/mp4a-latm";                    // AAC Low Overhead Audio Transport Multiplex
 

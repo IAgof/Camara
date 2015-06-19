@@ -13,7 +13,7 @@ import java.nio.ByteBuffer;
  */
 public class AndroidMuxer extends Muxer {
     private static final String TAG = "AndroidMuxer";
-    private static final boolean VERBOSE = false;
+    private static final boolean VERBOSE = true;
 
     private MediaMuxer mMuxer;
     private boolean mStarted;

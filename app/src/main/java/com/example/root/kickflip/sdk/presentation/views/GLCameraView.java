@@ -1,10 +1,9 @@
-package com.example.root.kickflip.sdk.view;
+package com.example.root.kickflip.sdk.presentation.views;
 
 import android.content.Context;
 import android.hardware.Camera;
 import android.opengl.GLSurfaceView;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 

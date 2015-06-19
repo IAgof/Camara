@@ -10,13 +10,13 @@ package com.example.root.kickflip.sdk.av;
  *
  */
 
-import com.example.root.kickflip.sdk.exception.KickflipException;
+import com.example.root.kickflip.sdk.presentation.exception.RecordException;
 
 
 /**
  * Provides callbacks for the major lifecycle benchmarks of a Broadcast.
  */
-public interface RecordListener {
+public interface OnRecordListener {
 
         /**
          * The broadcast has started, and is currently buffering.
@@ -32,5 +32,5 @@ public interface RecordListener {
         /**
          * An error occurred.
          */
-        public void onRecordError(KickflipException error);
+        public void onRecordError(RecordException error);
     }

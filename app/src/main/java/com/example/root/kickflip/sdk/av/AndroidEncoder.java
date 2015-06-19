@@ -7,16 +7,17 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.example.root.kickflip.sdk.Util;
+
 import java.nio.ByteBuffer;
 
-import static com.example.root.kickflip.sdk.Kickflip.isKitKat;
 
 /**
  * @hide
  */
 public abstract class AndroidEncoder {
     private final static String TAG = "AndroidEncoder";
-    private final static boolean VERBOSE = false;
+    private final static boolean VERBOSE = true;
 
     protected Muxer mMuxer;
     protected MediaCodec mEncoder;
@@ -48,11 +49,11 @@ public abstract class AndroidEncoder {
 
     @TargetApi(Build.VERSION_CODES.KITKAT)
     public void adjustBitrate(int targetBitrate){
-        if(isKitKat() && mEncoder != null){
+        if(Util.isKitKat() && mEncoder != null){
             Bundle bitrate = new Bundle();
             bitrate.putInt(MediaCodec.PARAMETER_KEY_VIDEO_BITRATE, targetBitrate);
             mEncoder.setParameters(bitrate);
-        }else if (!isKitKat()) {
+        }else if (!Util.isKitKat()) {
             Log.w(TAG, "Ignoring adjustVideoBitrate call. This functionality is only available on Android API 19+");
         }
     }

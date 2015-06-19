@@ -14,7 +14,7 @@ import static com.google.common.base.Preconditions.checkArgument;
  */
 public class Filters {
     private static final String TAG = "Filters";
-    private static final boolean VERBOSE = false;
+    private static final boolean VERBOSE = true;
 
     // Camera filters; must match up with camera_filter_names in strings.xml
     static final int FILTER_NONE = 0;

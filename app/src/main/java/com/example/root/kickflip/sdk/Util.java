@@ -35,6 +35,11 @@ public class Util {
         mMachineSdf.setTimeZone(TimeZone.getTimeZone("UTC"));
     }
 
+    /**
+     * Returns whether the current device is running Android 4.4, KitKat, or newer
+     *
+     * KitKat is required for certain Kickflip features like Adaptive bitrate streaming
+     */
     public static boolean isKitKat() {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT;
     }
@@ -64,5 +69,9 @@ public class Util {
                 .build();
         return config;
     }
+
+
+
+
 
 }

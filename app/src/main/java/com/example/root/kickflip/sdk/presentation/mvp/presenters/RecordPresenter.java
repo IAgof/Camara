@@ -1,35 +1,50 @@
-package com.example.root.kickflip.sdk.av;
+package com.example.root.kickflip.sdk.presentation.mvp.presenters;
+/*
+ * Copyright (C) 2015 Videona Socialmedia SL
+ * http://www.videona.com
+ * info@videona.com
+ * All rights reserved
+ *
+ * Authors:
+ * Álvaro Martínez Marco
+ *
+ */
 
-import java.io.IOException;
+import android.util.Log;
 
+import com.example.root.kickflip.sdk.Util;
+import com.example.root.kickflip.sdk.av.CameraEncoder;
+import com.example.root.kickflip.sdk.av.MicrophoneEncoder;
+import com.example.root.kickflip.sdk.av.OnRecordListener;
+import com.example.root.kickflip.sdk.av.SessionConfig;
 import com.example.root.kickflip.sdk.av.gles.FullFrameRect;
+import com.example.root.kickflip.sdk.presentation.exception.RecordException;
+import com.example.root.kickflip.sdk.presentation.mvp.views.RecordView;
 import com.example.root.kickflip.sdk.presentation.views.GLCameraView;
 
-/**
- * Records an Audio / Video stream to disk.
- *
- * Example usage:
- * <ul>
- *     <li>AVRecorder recorder = new AVRecorder(mSessionConfig);</li>
- *     <li>recorder.setPreviewDisplay(mPreviewDisplay);</li>
- *     <li>recorder.startRecording();</li>
- *     <li>recorder.stopRecording();</li>
- *     <li>(Optional) recorder.reset(mNewSessionConfig);</li>
- *     <li>(Optional) recorder.startRecording();</li>
- *     <li>(Optional) recorder.stopRecording();</li>
- *     <li>recorder.release();</li>
- * </ul>
- * @hide
- */
-public class AVRecorder {
+import java.io.File;
+import java.io.IOException;
+
+public class RecordPresenter implements OnRecordListener {
+
+    /**
+     * LOG_TAG
+     */
+    private final String LOG_TAG = getClass().getSimpleName();
+
+    private final RecordView recordView;
+
+    private SessionConfig mConfig;
 
     protected CameraEncoder mCamEncoder;
     protected MicrophoneEncoder mMicEncoder;
-    private SessionConfig mConfig;
+
     private boolean mIsRecording;
 
-    public AVRecorder(SessionConfig config) throws IOException {
-        init(config);
+    public RecordPresenter(RecordView recordView) throws IOException {
+
+        this.recordView = recordView;
+        start();
     }
 
     private void init(SessionConfig config) throws IOException {
@@ -37,6 +52,21 @@ public class AVRecorder {
         mMicEncoder = new MicrophoneEncoder(config);
         mConfig = config;
         mIsRecording = false;
+    }
+
+    private void setupDefaultSessionConfig() {
+        Log.i(LOG_TAG, "Setting default SessonConfig");
+
+        String outputLocation = new File(Util.PATH_APP, Util.testRecorded).getAbsolutePath();
+        mConfig = new SessionConfig.Builder(outputLocation)
+                .withVideoBitrate(2 * 1000 * 1000)
+                .withAudioBitrate(192 * 1000)
+                .build();
+    }
+
+
+    public SessionConfig getSessionConfig() {
+        return mConfig;
     }
 
     public void setPreviewDisplay(GLCameraView display){
@@ -68,7 +98,7 @@ public class AVRecorder {
      * incoming video frames as Vertical Video, rotating
      * and cropping them for proper display.
      *
-     * This method only has effect if {@link io.kickflip.sdk.av.SessionConfig#setConvertVerticalVideo(boolean)}
+     * This method only has effect if {SessionConfig#setConvertVerticalVideo(boolean)}
      * has been set true for the current recording session.
      *
      */
@@ -90,6 +120,21 @@ public class AVRecorder {
         mIsRecording = false;
         mMicEncoder.stopRecording();
         mCamEncoder.stopRecording();
+    }
+
+    /**
+     *
+     */
+    public void start(){
+        if (mConfig == null) {
+            setupDefaultSessionConfig();
+        }
+
+        try {
+            init(getSessionConfig());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -123,5 +168,23 @@ public class AVRecorder {
 
     public void onHostActivityResumed(){
         mCamEncoder.onHostActivityResumed();
+    }
+
+    @Override
+    public void onRecordStart() {
+
+        startRecording();
+    }
+
+    @Override
+    public void onRecordStop() {
+
+        stopRecording();
+
+    }
+
+    @Override
+    public void onRecordError(RecordException error) {
+
     }
 }
