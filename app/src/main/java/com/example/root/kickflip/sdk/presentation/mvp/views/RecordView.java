@@ -10,6 +10,8 @@ package com.example.root.kickflip.sdk.presentation.mvp.views;
  *
  */
 
+import com.example.root.kickflip.sdk.presentation.views.GLCameraEncoderView;
+
 public interface RecordView {
 
  /*   void startPreview(CameraPreview cameraPreview, CustomManualFocusView customManualFocusView,
@@ -18,6 +20,8 @@ public interface RecordView {
     void stopPreview(CameraPreview cameraPreview, CustomManualFocusView customManualFocusView,
                      boolean supportAutoFocus);
  */
+
+    void startPreview(GLCameraEncoderView cameraEncoderView);
 
     void showRecordStarted();
 

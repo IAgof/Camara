@@ -1,4 +1,4 @@
-package com.example.root.kickflip.sdk.av;
+package com.example.root.kickflip.sdk.presentation.views.listener;
 /*
  * Copyright (C) 2015 Videona Socialmedia SL
  * http://www.videona.com

@@ -15,7 +15,7 @@ import android.util.Log;
 import com.example.root.kickflip.sdk.Util;
 import com.example.root.kickflip.sdk.av.CameraEncoder;
 import com.example.root.kickflip.sdk.av.MicrophoneEncoder;
-import com.example.root.kickflip.sdk.av.OnRecordListener;
+import com.example.root.kickflip.sdk.presentation.views.listener.OnRecordListener;
 import com.example.root.kickflip.sdk.av.SessionConfig;
 import com.example.root.kickflip.sdk.av.gles.FullFrameRect;
 import com.example.root.kickflip.sdk.presentation.exception.RecordException;
@@ -41,9 +41,10 @@ public class RecordPresenter implements OnRecordListener {
 
     private boolean mIsRecording;
 
-    public RecordPresenter(RecordView recordView) throws IOException {
+    public RecordPresenter(RecordView recordView, SessionConfig config) throws IOException {
 
         this.recordView = recordView;
+        mConfig = config;
         start();
     }
 
