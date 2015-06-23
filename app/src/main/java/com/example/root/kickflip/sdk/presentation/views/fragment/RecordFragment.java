@@ -5,20 +5,21 @@ import android.app.Fragment;
 import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
-import android.hardware.Camera;
+import android.graphics.drawable.AnimationDrawable;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.Spinner;
+import android.widget.Chronometer;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
 
 import com.example.root.kickflip.R;
 import com.example.root.kickflip.sdk.Util;
@@ -26,13 +27,27 @@ import com.example.root.kickflip.sdk.av.SessionConfig;
 import com.example.root.kickflip.sdk.av.gles.FullFrameRect;
 import com.example.root.kickflip.sdk.presentation.mvp.presenters.RecordPresenter;
 import com.example.root.kickflip.sdk.presentation.mvp.views.RecordView;
+import com.example.root.kickflip.sdk.presentation.views.CustomManualFocusView;
 import com.example.root.kickflip.sdk.presentation.views.GLCameraEncoderView;
+import com.example.root.kickflip.sdk.presentation.views.adapter.CameraEffectAdapter;
+import com.example.root.kickflip.sdk.presentation.views.adapter.ColorEffectAdapter;
+import com.example.root.kickflip.sdk.presentation.views.listener.CameraEffectClickListener;
+import com.example.root.kickflip.sdk.presentation.views.listener.ColorEffectClickListener;
+
+import org.lucasr.twowayview.TwoWayView;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+
+import butterknife.ButterKnife;
+import butterknife.InjectView;
+import butterknife.OnClick;
 
 
-public class RecordFragment extends Fragment implements RecordView, AdapterView.OnItemSelectedListener {
+public class RecordFragment extends Fragment implements RecordView, ColorEffectClickListener,
+        CameraEffectClickListener {
+
     private static final String TAG = "RecordFragment";
     private static final boolean VERBOSE = false;
     private static RecordFragment mFragment;
@@ -40,20 +55,101 @@ public class RecordFragment extends Fragment implements RecordView, AdapterView.
     private GLCameraEncoderView mCameraView;
     private SessionConfig mConfig;
 
+    /**
+     * LOG_TAG
+     */
+    private final String LOG_TAG = getClass().getSimpleName();
 
-    View.OnClickListener mRecordButtonClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            if (recordPresenter.isRecording()) {
-                recordPresenter.stopRecording();
+    /**
+     * Button to record video
+     */
+    @InjectView(R.id.button_record)
+    ImageButton buttonRecord;
+    /**
+     * Chronometer, indicate time recording video
+     */
+    @InjectView(R.id.chronometer_record)
+    Chronometer chronometerRecord;
+    /**
+     * Rec point, animation
+     */
+    @InjectView(R.id.imageRecPoint)
+    ImageView imageRecPoint;
+    /**
+     * Button to apply color effects
+     */
+    @InjectView(R.id.button_color_effect)
+    ImageButton buttonColorEffect;
 
-            } else {
-                recordPresenter.startRecording();
-                //stopMonitoringOrientation();
-                v.setBackgroundResource(R.drawable.red_dot_stop);
-            }
-        }
-    };
+    /**
+     * Button to apply camera effects
+     */
+    @InjectView(R.id.button_camera_effect)
+    ImageButton buttonCameraEffect;
+
+    /**
+     * Button change camera
+     */
+    @InjectView((R.id.button_change_camera))
+    ImageButton buttonChangeCamera;
+
+
+    /**
+     * Adapter to add images color effect
+     */
+    private ColorEffectAdapter colorEffectAdapter;
+
+    /**
+     * Position color effect pressed
+     */
+    public static int positionColorEffectPressed = 0;
+
+    /**
+     * Adapter to add images color effect
+     */
+    private CameraEffectAdapter cameraEffectAdapter;
+
+    /**
+     * Position camera effect pressed
+     */
+    public static int positionCameraEffectPressed = 0;
+
+    /**
+     * RelativeLayout to show and hide color effects
+     */
+    @InjectView(R.id.relativelayout_color_effect)
+    RelativeLayout relativeLayoutColorEffect;
+
+    /**
+     * ListView to use horizontal adapter
+     */
+    @InjectView(R.id.listview_items_color_effect)
+    TwoWayView listViewItemsColorEffect;
+
+
+    /**
+     * RelativeLayout to show and hide camera effects
+     */
+    @InjectView(R.id.relativelayout_camera_effect)
+    RelativeLayout relativeLayoutCameraEffect;
+
+    /**
+     * ListView to use horizontal adapter
+     */
+    @InjectView(R.id.listview_items_camera_effect)
+    TwoWayView listViewItemsCameraEffect;
+
+    /**
+     * FrameLayout to camera preview
+     */
+    @InjectView(R.id.framelayout_camera_preview)
+    ViewGroup frameLayoutCameraPreview;
+
+    /**
+     * CustomManualFocusView
+     */
+    private CustomManualFocusView customManualFocusView;
+
 
     private SensorEventListener mOrientationListener = new SensorEventListener() {
         final int SENSOR_CONFIRMATION_THRESHOLD = 5;
@@ -121,6 +217,8 @@ public class RecordFragment extends Fragment implements RecordView, AdapterView.
         if (mConfig == null) {
             setupDefaultSessionConfig();
         }
+
+
     }
 
     public static RecordFragment getInstance() {
@@ -164,6 +262,13 @@ public class RecordFragment extends Fragment implements RecordView, AdapterView.
         if (recordPresenter != null)
             recordPresenter.onHostActivityResumed();
         startMonitoringOrientation();
+
+        if (colorEffectAdapter != null) {
+            colorEffectAdapter = null;
+            recordPresenter.colorEffectClickListener();
+        }
+
+       // chronometerRecord.setText("00:00");
     }
 
     @Override
@@ -189,32 +294,32 @@ public class RecordFragment extends Fragment implements RecordView, AdapterView.
         View root;
         if (recordPresenter != null && getActivity().getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
             root = inflater.inflate(R.layout.fragment_record, container, false);
+
+            ButterKnife.inject(this, root);
+
             mCameraView = (GLCameraEncoderView) root.findViewById(R.id.cameraPreview);
             mCameraView.setKeepScreenOn(true);
 
+          /*  customManualFocusView = new CustomManualFocusView(root.getContext());
+            customManualFocusView.onPreviewTouchEvent(root.getContext());
+
+            frameLayoutCameraPreview.addView(mCameraView);
+            frameLayoutCameraPreview.addView(customManualFocusView);
+         */
+
             recordPresenter.setPreviewDisplay(mCameraView);
-            Button recordButton = (Button) root.findViewById(R.id.recordButton);
 
-            recordButton.setOnClickListener(mRecordButtonClickListener);
-       /*     mLiveBanner.setOnClickListener(mShareButtonClickListener);
 
-            if (recordPresenter.isLive()) {
-                setBannerToLiveState();
-                mLiveBanner.setVisibility(View.VISIBLE);
-            }
-        */
             if (recordPresenter.isRecording()) {
-                recordButton.setBackgroundResource(R.drawable.red_dot_stop);
-             /*   if (!recordPresenter.isLive()) {
-                    setBannerToBufferingState();
-                    mLiveBanner.setVisibility(View.VISIBLE);
-                }
-                */
+                buttonRecord.setBackgroundResource(R.drawable.red_dot_stop);
+
             }
-            setupFilterSpinner(root);
-            setupCameraFlipper(root);
+
+
         } else
             root = new View(container.getContext());
+
+
         return root;
     }
 
@@ -254,39 +359,152 @@ public class RecordFragment extends Fragment implements RecordView, AdapterView.
                 .build();
     }
 
-    private void setupFilterSpinner(View root) {
-        Spinner spinner = (Spinner) root.findViewById(R.id.filterSpinner);
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getActivity(),
-                R.array.camera_filter_names, android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        // Apply the adapter to the spinner.
-        spinner.setAdapter(adapter);
-        spinner.setOnItemSelectedListener(this);
+
+    @OnClick (R.id.button_change_camera)
+    public void buttonChangeCameraListener(){
+
+        recordPresenter.requestOtherCamera();
     }
 
-    private void setupCameraFlipper(View root) {
-        View flipper = root.findViewById(R.id.cameraFlipper);
-        if (Camera.getNumberOfCameras() == 1) {
-            flipper.setVisibility(View.GONE);
+    /**
+     * Record button on click listener
+     *
+     * @return view
+     */
+    //TODO buttonRecordListener on Presenter
+    @OnClick(R.id.button_record)
+    public void buttonRecordListener() {
+        Log.d(LOG_TAG, "buttonRecordListener");
+
+        if (recordPresenter.isRecording()) {
+            recordPresenter.stopRecording();
+
         } else {
-            flipper.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    recordPresenter.requestOtherCamera();
-                }
-            });
+            recordPresenter.startRecording();
+            //stopMonitoringOrientation();
+            buttonRecord.setBackgroundResource(R.drawable.activity_record_icon_stop_normal);
         }
     }
 
-    @Override
-    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        if (((String) parent.getTag()).compareTo("filter") == 0) {
-            recordPresenter.applyFilter(position);
-        }
+    /**
+     * Color effect on click listener
+     */
+    @OnClick(R.id.button_color_effect)
+    public void colorEffectButtonListener() {
+        recordPresenter.colorEffectClickListener();
     }
 
+    /**
+     * Camera effect on click listener
+     */
+    @OnClick(R.id.button_camera_effect)
+    public void cameraEffectButtonListener() {
+        recordPresenter.cameraEffectClickListener();
+    }
+
+    /**
+     * User select effect
+     *
+     * @param adapter
+     * @param colorEffect
+     */
     @Override
-    public void onNothingSelected(AdapterView<?> parent) {
+    public void onColorEffectClicked(ColorEffectAdapter adapter, String colorEffect, int position) {
+        Log.d(LOG_TAG, "onColorEffectClicked() RecordActivity");
+        positionColorEffectPressed = position;
+        adapter.notifyDataSetChanged();
+        recordPresenter.setColorEffect(colorEffect);
+    }
+
+    /**
+     * User select camera effect
+     *
+     * @param adapter
+     * @param cameraEffect
+     */
+    @Override
+    public void onCameraEffectClicked(CameraEffectAdapter adapter, String cameraEffect, int position) {
+        Log.d(LOG_TAG, "onColorEffectClicked() RecordActivity");
+        positionCameraEffectPressed = position;
+        adapter.notifyDataSetChanged();
+        recordPresenter.setCameraEffect(position);
+    }
+
+    /**
+     * Show list of effects
+     *
+     * @param effects
+     */
+    @Override
+    public void showEffects(ArrayList<String> effects) {
+        Log.d(LOG_TAG, "showEffects() RecordActivity");
+
+        colorEffectAdapter = new ColorEffectAdapter(this, effects);
+
+        if (relativeLayoutColorEffect.isShown()) {
+
+            relativeLayoutColorEffect.setVisibility(View.INVISIBLE);
+
+            buttonColorEffect.setImageResource(R.drawable.common_icon_filters_normal);
+
+            return;
+
+        }
+        relativeLayoutColorEffect.setVisibility(View.VISIBLE);
+        buttonColorEffect.setImageResource(R.drawable.common_icon_filters_pressed);
+        colorEffectAdapter.setViewClickColorEffectListener(RecordFragment.this);
+        listViewItemsColorEffect.setAdapter(colorEffectAdapter);
+    }
+
+    /**
+     * Update view with effect selected
+     *
+     * @param colorEffect
+     */
+    @Override
+    public void showEffectSelected(String colorEffect) {
+        Log.d(LOG_TAG, "showEffectSelected() RecordActivity");
+        /// TODO apply animation effect
+        colorEffectAdapter.notifyDataSetChanged();
+    }
+
+
+    /**
+     * Show list of effects
+     *
+     * @param effects
+     */
+    @Override
+    public void showCameraEffects(ArrayList<String> effects) {
+        Log.d(LOG_TAG, "showEffects() RecordActivity");
+
+        cameraEffectAdapter = new CameraEffectAdapter(this, effects);
+
+        if (relativeLayoutCameraEffect.isShown()) {
+
+            relativeLayoutCameraEffect.setVisibility(View.INVISIBLE);
+
+            buttonCameraEffect.setImageResource(R.drawable.effects_bg);
+
+            return;
+
+        }
+        relativeLayoutCameraEffect.setVisibility(View.VISIBLE);
+        //buttonCameraEffect.setImageResource(R.drawable.common_icon_filters_pressed);
+        cameraEffectAdapter.setViewClickCameraEffectListener(RecordFragment.this);
+        listViewItemsCameraEffect.setAdapter(cameraEffectAdapter);
+    }
+
+    /**
+     * Update view with effect selected
+     *
+     * @param cameraEffect
+     */
+    @Override
+    public void showCameraEffectSelected(String cameraEffect) {
+        Log.d(LOG_TAG, "showEffectSelected() RecordActivity");
+        /// TODO apply animation effect
+        cameraEffectAdapter.notifyDataSetChanged();
     }
 
 
@@ -320,23 +538,139 @@ public class RecordFragment extends Fragment implements RecordView, AdapterView.
         }
     }
 
+
     @Override
-    public void startPreview(GLCameraEncoderView cameraEncoderView) {
+    public void startPreview(GLCameraEncoderView cameraEncoderView, CustomManualFocusView
+            customManualFocusView, boolean supportFocus) {
+
+        frameLayoutCameraPreview.addView(cameraEncoderView);
+        if(supportFocus) {
+            frameLayoutCameraPreview.addView(customManualFocusView);
+        }
+        // Fix format chronometer 00:00. Do in xml, design
+        chronometerRecord.setText("00:00");
+        customManualFocusView.onPreviewTouchEvent(getActivity().getApplicationContext());
+
+    }
+
+    @Override
+    public void stopPreview(GLCameraEncoderView cameraEncoderView, CustomManualFocusView
+            customManualFocusView, boolean supportFocus) {
+
+        frameLayoutCameraPreview.removeView(cameraEncoderView);
+        if(supportFocus) {
+            frameLayoutCameraPreview.removeView(customManualFocusView);
+        }
 
     }
 
     @Override
     public void showRecordStarted() {
-
+        buttonRecord.setImageResource(R.drawable.activity_record_icon_stop_normal);
+        buttonRecord.setImageAlpha(125); // (50%)
     }
 
     @Override
     public void showRecordFinished() {
+        buttonRecord.setImageResource(R.drawable.activity_record_icon_rec_normal);
+        buttonRecord.setEnabled(false);
+    }
 
+    @Override
+    public void startChronometer() {
+
+        setChronometer();
+        chronometerRecord.start();
+        // Activate animation rec
+        imageRecPoint.setVisibility(View.VISIBLE);
+        AnimationDrawable frameAnimation = (AnimationDrawable)imageRecPoint.getDrawable();
+        frameAnimation.setCallback(imageRecPoint);
+        frameAnimation.setVisible(true, true);
+
+    }
+
+    @Override
+    public void stopChronometer() {
+
+        chronometerRecord.stop();
+        imageRecPoint.setVisibility(View.INVISIBLE);
+
+    }
+
+    /**
+     * Set chronometer with format 00:00
+     */
+    public void setChronometer() {
+        Log.d(LOG_TAG, "setChronometer() RecordActivity");
+        chronometerRecord.setBase(SystemClock.elapsedRealtime());
+        chronometerRecord.setOnChronometerTickListener(new android.widget.Chronometer.OnChronometerTickListener() {
+            @Override
+            public void onChronometerTick(android.widget.Chronometer chronometer) {
+
+                long time = SystemClock.elapsedRealtime() - chronometer.getBase();
+
+                int h = (int) (time / 3600000);
+                int m = (int) (time - h * 3600000) / 60000;
+                int s = (int) (time - h * 3600000 - m * 60000) / 1000;
+                // String hh = h < 10 ? "0"+h: h+"";
+                String mm = m < 10 ? "0" + m : m + "";
+                String ss = s < 10 ? "0" + s : s + "";
+                chronometerRecord.setText(mm+":"+ss);
+                //RecordFragment.this.chronometerRecord.setText(mm + ":" + ss);
+
+            }
+        });
     }
 
     @Override
     public void showError() {
 
+    }
+
+
+    /**
+     * OnClick buttons, tracking Google Analytics
+     */
+    @OnClick({R.id.button_record, R.id.button_color_effect, R.id.button_flash_mode,
+            R.id.button_settings_camera, R.id.button_change_camera})
+    public void clickListener(View view) {
+        sendButtonTracked(view.getId());
+    }
+
+    /**
+     * Sends button clicks to Google Analytics
+     *
+     * @param id identifier of the clicked view
+     */
+    private void sendButtonTracked(int id) {
+        String label;
+        switch (id) {
+            case R.id.button_record:
+                label = "Capture ";
+                break;
+            case R.id.button_color_effect:
+                label = "Show available effects";
+                break;
+            case R.id.button_change_camera:
+                label = "Change camera";
+                break;
+            case R.id.button_flash_mode:
+                label = "Flash camera";
+                break;
+            case R.id.button_settings_camera:
+                label = "Settings camera";
+                break;
+            default:
+                label = "Other";
+        }
+
+        //TODO add tracker to Fragment
+     /*   tracker.send(new HitBuilders.EventBuilder()
+                .setCategory("RecordActivity")
+                .setAction("button clicked")
+                .setLabel(label)
+                .build());
+        GoogleAnalytics.getInstance(this.getApplication().getBaseContext()).dispatchLocalHits();
+        */
     }
 }

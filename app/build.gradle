@@ -24,4 +24,6 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.android.support:appcompat-v7:22.2.0'
     compile 'com.google.api-client:google-api-client:1.18.0-rc'
+    compile 'com.jakewharton:butterknife:6.0.0'
+    compile 'org.lucasr.twowayview:twowayview:0.1.4'
 }

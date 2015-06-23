@@ -76,16 +76,19 @@ public class GLCameraView extends GLSurfaceView {
         }
     };
 
+
     @Override
     public boolean onTouchEvent(MotionEvent ev) {
         if(mScaleGestureDetector != null){
             if(!mScaleGestureDetector.onTouchEvent(ev)){
                 // No scale gesture detected
-
             }
         }
+
+
         return true;
     }
+
 
 
 }

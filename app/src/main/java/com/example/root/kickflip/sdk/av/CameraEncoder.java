@@ -302,6 +302,7 @@ public class CameraEncoder implements SurfaceTexture.OnFrameAvailableListener, R
         //display.setDebugFlags(GLSurfaceView.DEBUG_CHECK_GL_ERROR | GLSurfaceView.DEBUG_LOG_GL_CALLS);
         display.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
         display.setPreserveEGLContextOnPause(true);
+
         mDisplayView = display;
     }
 

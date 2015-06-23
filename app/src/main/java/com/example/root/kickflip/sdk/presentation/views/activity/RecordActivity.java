@@ -22,7 +22,7 @@ public class RecordActivity extends ImmersiveActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_record);
 
-
+       // ButterKnife.inject(this);
 
         if (savedInstanceState == null) {
 

@@ -15,17 +15,19 @@ import android.util.Log;
 import com.example.root.kickflip.sdk.Util;
 import com.example.root.kickflip.sdk.av.CameraEncoder;
 import com.example.root.kickflip.sdk.av.MicrophoneEncoder;
-import com.example.root.kickflip.sdk.presentation.views.listener.OnRecordListener;
 import com.example.root.kickflip.sdk.av.SessionConfig;
 import com.example.root.kickflip.sdk.av.gles.FullFrameRect;
+import com.example.root.kickflip.sdk.domain.record.RecordUseCase;
 import com.example.root.kickflip.sdk.presentation.exception.RecordException;
 import com.example.root.kickflip.sdk.presentation.mvp.views.RecordView;
 import com.example.root.kickflip.sdk.presentation.views.GLCameraView;
+import com.example.root.kickflip.sdk.presentation.views.listener.OnRecordListener;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
-public class RecordPresenter implements OnRecordListener {
+public class RecordPresenter implements OnRecordListener, OnCameraEffectListener, OnColorEffectListener {
 
     /**
      * LOG_TAG
@@ -33,6 +35,7 @@ public class RecordPresenter implements OnRecordListener {
     private final String LOG_TAG = getClass().getSimpleName();
 
     private final RecordView recordView;
+    private final RecordUseCase recordUseCase;
 
     private SessionConfig mConfig;
 
@@ -45,6 +48,8 @@ public class RecordPresenter implements OnRecordListener {
 
         this.recordView = recordView;
         mConfig = config;
+        recordUseCase = new RecordUseCase();
+
         start();
     }
 
@@ -175,17 +180,93 @@ public class RecordPresenter implements OnRecordListener {
     public void onRecordStart() {
 
         startRecording();
+        recordView.startChronometer();
     }
 
     @Override
     public void onRecordStop() {
 
         stopRecording();
+        recordView.stopChronometer();
 
     }
 
     @Override
     public void onRecordError(RecordException error) {
 
+    }
+
+    /**
+     * Effect Button pressed
+     */
+    public void colorEffectClickListener() {
+        recordUseCase.getAvailableColorEffects(this, mCamEncoder.getCamera());
+    }
+
+
+    /**
+     * Effect Button pressed
+     */
+    public void cameraEffectClickListener() {
+        recordUseCase.getAvailableCameraEffects(this);
+    }
+
+
+        /**
+         * Color effect selected
+         *
+         * @param effect
+         */
+    //TODO Add effect use case
+    public void setColorEffect(String effect) {
+       recordUseCase.addAndroidCameraEffect(effect, mCamEncoder.getCamera(), this);
+
+    }
+
+    /**
+     * Camera Effect selected
+     *
+     * @param filter
+     */
+    //TODO Add effect use case
+    public void setCameraEffect(int filter) {
+        mCamEncoder.applyFilter(filter);
+    }
+
+    @Override
+    public void onColorEffectAdded(String colorEffect, long time) {
+       // sendButtonTracked(colorEffect, time);
+        recordView.showEffectSelected(colorEffect);
+        Log.d(LOG_TAG, "onColorEffectAdded");
+    }
+
+    @Override
+    public void onColorEffectRemoved(String colorEffect, long time) {
+        recordView.showEffectSelected(colorEffect);
+        Log.d(LOG_TAG, "onColorEffectRemoved");
+    }
+
+    @Override
+    public void onColorEffectListRetrieved(ArrayList<String> effects) {
+        recordView.showEffects(effects);
+        Log.d(LOG_TAG, "onColorEffectListRetrieved");
+    }
+
+    @Override
+    public void onCameraEffectAdded(String cameraEffect, long time) {
+        recordView.showCameraEffectSelected(cameraEffect);
+      //  mCamEncoder.applyFilter(filter);
+
+    }
+
+    @Override
+    public void onCameraEffectRemoved(String cameraEffect, long time) {
+        recordView.showCameraEffectSelected(cameraEffect);
+
+    }
+
+    @Override
+    public void onCameraEffectListRetrieved(ArrayList<String> effect) {
+        recordView.showCameraEffects(effect);
     }
 }

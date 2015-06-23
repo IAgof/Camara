@@ -10,24 +10,24 @@ package com.example.root.kickflip.sdk.presentation.mvp.views;
  *
  */
 
+import com.example.root.kickflip.sdk.presentation.views.CustomManualFocusView;
 import com.example.root.kickflip.sdk.presentation.views.GLCameraEncoderView;
+
+import java.util.ArrayList;
 
 public interface RecordView {
 
- /*   void startPreview(CameraPreview cameraPreview, CustomManualFocusView customManualFocusView,
-                      boolean supportAutoFocus);
+    void startPreview(GLCameraEncoderView cameraEncoderView, CustomManualFocusView customManualFocusView,
+                      boolean supportFocus);
 
-    void stopPreview(CameraPreview cameraPreview, CustomManualFocusView customManualFocusView,
-                     boolean supportAutoFocus);
- */
-
-    void startPreview(GLCameraEncoderView cameraEncoderView);
+    void stopPreview(GLCameraEncoderView cameraEncoderView, CustomManualFocusView customManualFocusView,
+                     boolean supportFocus);
 
     void showRecordStarted();
 
     void showRecordFinished();
 
-  /*  void startChronometer();
+    void startChronometer();
 
     void stopChronometer();
 
@@ -35,7 +35,11 @@ public interface RecordView {
 
     void showEffectSelected(String colorEffect);
 
-    void navigateEditActivity();
+    void showCameraEffects(ArrayList<String> effects);
+
+    void showCameraEffectSelected(String colorEffect);
+
+  /*  void navigateEditActivity();
 
     void lockScreenRotation();
 
