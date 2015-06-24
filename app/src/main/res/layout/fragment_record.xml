@@ -3,19 +3,16 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
     <!--tools:context="com.example.root.kickflip.sdk.presentation.views.fragment.RecordFragment" -->
-
-    <FrameLayout
-        android:id="@+id/framelayout_camera_preview"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_centerInParent="true">
-
-    </FrameLayout>
-
-    <com.example.root.kickflip.sdk.presentation.views.GLCameraEncoderView
+    <com.example.videonacamera.kickflip.sdk.presentation.views.GLCameraEncoderView
         android:id="@+id/cameraPreview"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
+
+    <com.example.videonacamera.kickflip.sdk.presentation.views.CustomManualFocusView
+        android:id="@+id/customManualFocusView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        />
 
 
     <ImageButton
@@ -211,5 +208,6 @@
         </LinearLayout>
 
     </RelativeLayout>
+
 
 </RelativeLayout>
