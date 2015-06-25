@@ -13,14 +13,14 @@ import android.os.Trace;
 import android.util.Log;
 import android.view.MotionEvent;
 
+import com.example.videonacamera.kickflip.sdk.presentation.views.GLCameraEncoderView;
+import com.example.videonacamera.kickflip.sdk.presentation.views.GLCameraView;
+import com.google.common.eventbus.EventBus;
 import com.example.videonacamera.kickflip.sdk.av.gles.EglCore;
 import com.example.videonacamera.kickflip.sdk.av.gles.EglStateSaver;
 import com.example.videonacamera.kickflip.sdk.av.gles.FullFrameRect;
 import com.example.videonacamera.kickflip.sdk.av.gles.Texture2dProgram;
 import com.example.videonacamera.kickflip.sdk.av.gles.WindowSurface;
-import com.example.videonacamera.kickflip.sdk.presentation.views.GLCameraEncoderView;
-import com.example.videonacamera.kickflip.sdk.presentation.views.GLCameraView;
-import com.google.common.eventbus.EventBus;
 
 import java.io.File;
 import java.io.IOException;
@@ -152,7 +152,7 @@ public class CameraEncoder implements SurfaceTexture.OnFrameAvailableListener, R
      * This must be called after {@link #stopRecording()} and before {@link #release()}
      *
      * @param config the desired parameters for the next recording. Make sure you're
-     *               providing a new {@link com.example.videonacamera.kickflip.sdk.av.SessionConfig} to avoid
+     *               providing a new {@link com.videonasocialmedia.videona.avrecorder.SessionConfig} to avoid
      *               overwriting a previous recording.
      */
     public void reset(SessionConfig config) {
@@ -401,7 +401,7 @@ public class CameraEncoder implements SurfaceTexture.OnFrameAvailableListener, R
 
     /**
      * Stop recording. After this call you must call either {@link #release()} to release resources if you're not going to
-     * make any subsequent recordings, or {@link #reset(com.example.videonacamera.kickflip.sdk.av.SessionConfig)} to prepare
+     * make any subsequent recordings, or {@link #reset( com.videonasocialmedia.videona.avrecorder.SessionConfig)} to prepare
      * the encoder for the next recording
      * <p/>
      * Called from UI thread
