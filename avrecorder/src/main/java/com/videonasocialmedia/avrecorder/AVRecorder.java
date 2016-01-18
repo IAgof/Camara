@@ -6,6 +6,7 @@ import android.util.Log;
 import com.videonasocialmedia.avrecorder.view.GLCameraView;
 
 import java.io.IOException;
+import java.util.List;
 
 
 /**
@@ -75,6 +76,10 @@ public class AVRecorder {
      */
     public void addOverlayFilter(Drawable image) {
         mCamEncoder.addOverlayFilter(image, mConfig.getVideoWidth(), mConfig.getVideoHeight());
+    }
+
+    public void addAnimatedOverlayFilter (List<Drawable> images){
+        mCamEncoder.addAnimatedOverlayFilter(images, mConfig.getVideoWidth(), mConfig.getVideoHeight());
     }
 
     public void setWatermark(Drawable watermarkImage, boolean showInPreview) {

@@ -17,6 +17,7 @@ import android.view.Surface;
 
 import com.videonasocialmedia.avrecorder.event.CameraEncoderResetEvent;
 import com.videonasocialmedia.avrecorder.event.CameraOpenedEvent;
+import com.videonasocialmedia.avrecorder.overlay.AnimatedOverlay;
 import com.videonasocialmedia.avrecorder.overlay.Filter;
 import com.videonasocialmedia.avrecorder.overlay.Overlay;
 import com.videonasocialmedia.avrecorder.overlay.Watermark;
@@ -357,6 +358,17 @@ public class CameraEncoder implements SurfaceTexture.OnFrameAvailableListener, R
         overlayList.add(overlayToAdd);
     }
 
+    public void addAnimatedOverlayFilter(List<Drawable> images, int videoWidth, int videoHeight) {
+        Overlay overlayToAdd = new AnimatedOverlay(images, videoHeight, videoWidth);
+        if (overlayList == null) {
+            overlayList = new ArrayList<>();
+            if (mDisplayRenderer != null)
+                mDisplayRenderer.setOverlayList(overlayList);
+        }
+        overlayList.add(overlayToAdd);
+    }
+
+
     public void removeOverlayFilter(Overlay overlay) {
 
         overlayList = null;
@@ -576,7 +588,7 @@ public class CameraEncoder implements SurfaceTexture.OnFrameAvailableListener, R
                 if (watermark != null) {
                     if (!watermark.isInitialized())
                         watermark.initProgram();
-                    watermark.draw();
+                    watermark.draw(mFrameNum);
                 }
                 if (TRACE) Trace.endSection();
                 if (!mEncodedFirstFrame) {
@@ -622,7 +634,7 @@ public class CameraEncoder implements SurfaceTexture.OnFrameAvailableListener, R
             for (Overlay overlay : overlayList) {
                 if (!overlay.isInitialized())
                     overlay.initProgram();
-                overlay.draw();
+                overlay.draw(mFrameNum);
             }
         }
     }
@@ -1271,6 +1283,7 @@ public class CameraEncoder implements SurfaceTexture.OnFrameAvailableListener, R
     public void setEventBus(EventBus eventBus) {
         mEventBus = eventBus;
     }
+
 
     private enum STATE {
         /* Stopped or pre-construction */

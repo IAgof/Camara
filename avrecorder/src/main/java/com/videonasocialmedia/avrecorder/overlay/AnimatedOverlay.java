@@ -18,9 +18,8 @@ public class AnimatedOverlay extends Overlay {
     private int previousFrame = 0;
     private int textureCounter;
 
-    public AnimatedOverlay(List<Drawable> overlayImages, int height, int width,
-                           int positionX, int positionY) {
-        super(overlayImages.get(0), height, width, positionX, positionY);
+    public AnimatedOverlay(List<Drawable> overlayImages, int height, int width) {
+        super(overlayImages.get(0), height, width, 0, 0);
 
         this.overlayImages = overlayImages;
         textureIds = new int[overlayImages.size()];
@@ -50,7 +49,7 @@ public class AnimatedOverlay extends Overlay {
     }
 
     @Override
-    protected void setGlViewportSize() {
+         protected void setGlViewportSize() {
         //DO NOTHING
     }
 }

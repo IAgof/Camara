@@ -133,7 +133,7 @@ class CameraSurfaceRenderer implements GLSurfaceView.Renderer {
             if (watermark != null) {
                 if (!watermark.isInitialized())
                     watermark.initProgram();
-                watermark.draw();
+                watermark.draw(mFrameCount);
             }
 
             GLES20.glDisable(GLES20.GL_BLEND);
@@ -147,7 +147,7 @@ class CameraSurfaceRenderer implements GLSurfaceView.Renderer {
             for (Overlay overlay : overlayList) {
                 if (!overlay.isInitialized())
                     overlay.initProgram();
-                overlay.draw();
+                overlay.draw(mFrameCount);
             }
         }
     }
