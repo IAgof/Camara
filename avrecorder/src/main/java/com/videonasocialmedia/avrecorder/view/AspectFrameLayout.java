@@ -1,15 +1,24 @@
 package com.videonasocialmedia.avrecorder.view;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 
+import com.videonasocialmedia.avrecorder.R;
+
 /**
  * Created by jca on 21/1/16.
  */
-public class AspectFrameLayout extends FrameLayout{
+public class AspectFrameLayout extends FrameLayout {
+
+    private static final int FOUR_THREE_ATTR = 1;
+    private static final int SIXTEEN_NINE_ATTR = 2;
+
+    private static final double FOUR_THREE_VALUE = 1.333333;
+    private static final double SIXTEEN_NINE_VALUE = 1.777778;
 
     private static final String TAG = "AFL";
 
@@ -21,6 +30,26 @@ public class AspectFrameLayout extends FrameLayout{
 
     public AspectFrameLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
+        initAspectRatio(context, attrs, 0);
+    }
+
+    public AspectFrameLayout(Context context, AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
+        initAspectRatio(context, attrs, defStyleAttr);
+    }
+
+    private void initAspectRatio(Context context, AttributeSet attrs, int defStyleAttr) {
+        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.AspectFrameLayoutView, defStyleAttr, 0);
+        int attrAspect = a.getInt(R.styleable.AspectFrameLayoutView_aspect, 1);
+        switch (attrAspect) {
+            case FOUR_THREE_ATTR:
+                mTargetAspect = FOUR_THREE_VALUE;
+                break;
+            case SIXTEEN_NINE_ATTR:
+                mTargetAspect = SIXTEEN_NINE_VALUE;
+                break;
+        }
+        a.recycle();
     }
 
     /**

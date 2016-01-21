@@ -41,10 +41,6 @@ public class RecorderSample extends Activity {
         initRecordButton();
         initRotateButton();
         cameraPreview = (GLCameraEncoderView) findViewById(R.id.cameraPreview);
-        AspectFrameLayout aspectFL= (AspectFrameLayout) findViewById(R.id.aspectFrameLayout);
-
-        aspectFL.setAspectRatio(1.3333333);
-
         //SessionConfig config = new SessionConfig(FOLDER+System.currentTimeMillis()+".pm4");
         SessionConfig config = new SessionConfig(FOLDER,
                 640, 480, 5 * 1000 * 1000, 1, 48000, 192000);

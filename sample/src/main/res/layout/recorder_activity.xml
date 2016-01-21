@@ -1,20 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+
     android:orientation="vertical"
     android:padding="16dp">
-<com.videonasocialmedia.avrecorder.view.AspectFrameLayout
-    android:id="@+id/aspectFrameLayout"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:background="@color/colorPrimary"
-    android:padding="8dp">
-    <com.videonasocialmedia.avrecorder.view.GLCameraEncoderView
-        android:id="@+id/cameraPreview"
+
+    <com.videonasocialmedia.avrecorder.view.AspectFrameLayout
+        android:id="@+id/aspectFrameLayout"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
-</com.videonasocialmedia.avrecorder.view.AspectFrameLayout>
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimary"
+        android:padding="8dp"
+        app:aspect="sixteen_nine">
+
+        <com.videonasocialmedia.avrecorder.view.GLCameraEncoderView
+            android:id="@+id/cameraPreview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </com.videonasocialmedia.avrecorder.view.AspectFrameLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -25,7 +30,7 @@
             android:id="@+id/flashButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="flash"/>
+            android:text="flash" />
 
         <ToggleButton
             android:id="@+id/recordButton"

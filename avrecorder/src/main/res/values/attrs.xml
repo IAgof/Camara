@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <declare-styleable name="CustomManualFocusView">
-        <attr name="focus_icon" format="integer"/>
+        <attr name="focus_icon" format="integer" />
+    </declare-styleable>
+
+    <declare-styleable name="AspectFrameLayoutView">
+        <attr name="aspect" format="enum" >
+            <enum name="four_three" value="1" />
+            <enum name="sixteen_nine" value="2" />
+        </attr>
     </declare-styleable>
 </resources>
