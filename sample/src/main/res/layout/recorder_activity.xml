@@ -13,7 +13,7 @@
         android:layout_height="wrap_content"
         android:background="@color/colorPrimary"
         android:padding="8dp"
-        app:aspect="sixteen_nine">
+        app:aspect="four_three">
 
         <com.videonasocialmedia.avrecorder.view.GLCameraEncoderView
             android:id="@+id/cameraPreview"
