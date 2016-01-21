@@ -964,6 +964,8 @@ public class CameraEncoder implements SurfaceTexture.OnFrameAvailableListener, R
 
         choosePreviewSize(parms, desiredWidth, desiredHeight);
         // leave the frame rate set to default
+        parms.setPreviewSize(640, 480);
+
         mCamera.setParameters(parms);
 
         int[] fpsRange = new int[2];
@@ -1025,21 +1027,24 @@ public class CameraEncoder implements SurfaceTexture.OnFrameAvailableListener, R
 
         android.hardware.Camera.getCameraInfo(mCurrentCamera, info);
 
-        int degrees = 90;
-        /*
-        int rotation = mCurrentCameraRotation;
+        int degrees=0;
+
+        mCurrentCameraRotation= info.orientation;
+        int rotation = 0;
         switch (rotation) {
-            // case Surface.ROTATION_0: degrees = 0; break;
+            case Surface.ROTATION_0:
+                degrees = 0;
+                break;
             case Surface.ROTATION_90:
                 degrees = 90;
                 break;
-            // case Surface.ROTATION_180: degrees = 180; break;
+            case Surface.ROTATION_180:
+                degrees = 180;
+                break;
             case Surface.ROTATION_270:
                 degrees = 270;
                 break;
         }
-        */
-
 
         int result;
         if (info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {

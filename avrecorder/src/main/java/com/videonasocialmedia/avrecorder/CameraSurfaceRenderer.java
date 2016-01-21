@@ -127,7 +127,7 @@ class CameraSurfaceRenderer implements GLSurfaceView.Renderer {
         if (mCameraEncoder.isSurfaceTextureReadyForDisplay()) {
             mCameraEncoder.getSurfaceTextureForDisplay().updateTexImage();
             mCameraEncoder.getSurfaceTextureForDisplay().getTransformMatrix(mSTMatrix);
-            GLES20.glViewport(0, 0, screenWidth, screenHeight);
+            //GLES20.glViewport(0, 0, screenWidth, screenHeight);
             mFullScreenCamera.drawFrame(mCameraTextureId, mSTMatrix);
             drawOverlayList();
             if (watermark != null) {
@@ -153,7 +153,7 @@ class CameraSurfaceRenderer implements GLSurfaceView.Renderer {
     }
 
     public void signalVertialVideo(FullFrameRect.SCREEN_ROTATION isVertical) {
-        if (mFullScreenCamera != null) mFullScreenCamera.adjustForVerticalVideo(isVertical, false);
+        if (mFullScreenCamera != null) mFullScreenCamera.adjustForVerticalVideo(isVertical, true);
     }
 
     /**
