@@ -13,6 +13,7 @@ import com.videonasocialmedia.avrecorder.FullFrameRect;
 import com.videonasocialmedia.avrecorder.SessionConfig;
 import com.videonasocialmedia.avrecorder.event.CameraEncoderResetEvent;
 import com.videonasocialmedia.avrecorder.event.CameraOpenedEvent;
+import com.videonasocialmedia.avrecorder.view.AspectFrameLayout;
 import com.videonasocialmedia.avrecorder.view.GLCameraEncoderView;
 import com.videonasocialmedia.videonarecorder.R;
 
@@ -39,8 +40,11 @@ public class RecorderSample extends Activity {
         setContentView(R.layout.recorder_activity);
         initRecordButton();
         initRotateButton();
-
         cameraPreview = (GLCameraEncoderView) findViewById(R.id.cameraPreview);
+        AspectFrameLayout aspectFL= (AspectFrameLayout) findViewById(R.id.aspectFrameLayout);
+
+        aspectFL.setAspectRatio(1.3333333);
+
         //SessionConfig config = new SessionConfig(FOLDER+System.currentTimeMillis()+".pm4");
         SessionConfig config = new SessionConfig(FOLDER,
                 640, 480, 5 * 1000 * 1000, 1, 48000, 192000);
