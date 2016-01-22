@@ -52,7 +52,7 @@ public abstract class Overlay {
         setGlViewportSize();
         setBlendMode();
         configLayer(frame);
-        overlayLayer.drawFrame(textureId, IDENTITY_MATRIX);
+        overlayLayer.drawFrame(textureId, IDENTITY_MATRIX,false);
     }
 
     protected void configLayer(int frame) {

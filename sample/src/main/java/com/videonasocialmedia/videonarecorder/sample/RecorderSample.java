@@ -1,8 +1,10 @@
 package com.videonasocialmedia.videonarecorder.sample;
 
 import android.app.Activity;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.View;
 import android.widget.CompoundButton;
@@ -19,6 +21,8 @@ import com.videonasocialmedia.videonarecorder.R;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import de.greenrobot.event.EventBus;
 
@@ -50,11 +54,23 @@ public class RecorderSample extends Activity {
             GLCameraEncoderView cameraPreview =
                     (GLCameraEncoderView) findViewById(R.id.cameraPreview);
             recorder.setPreviewDisplay(cameraPreview);
-
+            List<Drawable> animatedOverlayFrames = getAnimatedOverlay();
+            recorder.addAnimatedOverlayFilter(animatedOverlayFrames);
             firstTimeRecording = true;
         } catch (IOException e) {
             Log.e("RecorderSample", e.getMessage());
         }
+    }
+
+    @NonNull
+    private List<Drawable> getAnimatedOverlay() {
+        List<Drawable> animatedOverlayFrames = new ArrayList<>();
+        animatedOverlayFrames.add(this.getResources().getDrawable(R.mipmap.noise_1));
+        animatedOverlayFrames.add(this.getResources().getDrawable(R.mipmap.noise_2));
+        animatedOverlayFrames.add(this.getResources().getDrawable(R.mipmap.noise_3));
+        animatedOverlayFrames.add(this.getResources().getDrawable(R.mipmap.noise_4));
+        animatedOverlayFrames.add(this.getResources().getDrawable(R.mipmap.noise_5));
+        return animatedOverlayFrames;
     }
 
     @Override

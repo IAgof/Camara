@@ -128,7 +128,7 @@ class CameraSurfaceRenderer implements GLSurfaceView.Renderer {
             mCameraEncoder.getSurfaceTextureForDisplay().updateTexImage();
             mCameraEncoder.getSurfaceTextureForDisplay().getTransformMatrix(mSTMatrix);
             //GLES20.glViewport(0, 0, screenWidth, screenHeight);
-            mFullScreenCamera.drawFrame(mCameraTextureId, mSTMatrix);
+            mFullScreenCamera.drawFrame(mCameraTextureId, mSTMatrix,true);
             drawOverlayList();
             if (watermark != null) {
                 if (!watermark.isInitialized())
