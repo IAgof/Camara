@@ -11,6 +11,7 @@ import android.widget.CompoundButton;
 import android.widget.ToggleButton;
 
 import com.videonasocialmedia.avrecorder.AVRecorder;
+import com.videonasocialmedia.avrecorder.Filters;
 import com.videonasocialmedia.avrecorder.FullFrameRect;
 import com.videonasocialmedia.avrecorder.SessionConfig;
 import com.videonasocialmedia.avrecorder.event.CameraEncoderResetEvent;
@@ -56,6 +57,7 @@ public class RecorderSample extends Activity {
             recorder.setPreviewDisplay(cameraPreview);
             List<Drawable> animatedOverlayFrames = getAnimatedOverlay();
             recorder.addAnimatedOverlayFilter(animatedOverlayFrames);
+            recorder.applyFilter(Filters.FILTER_SEPIA);
             firstTimeRecording = true;
         } catch (IOException e) {
             Log.e("RecorderSample", e.getMessage());
@@ -65,11 +67,16 @@ public class RecorderSample extends Activity {
     @NonNull
     private List<Drawable> getAnimatedOverlay() {
         List<Drawable> animatedOverlayFrames = new ArrayList<>();
-        animatedOverlayFrames.add(this.getResources().getDrawable(R.mipmap.noise_1));
-        animatedOverlayFrames.add(this.getResources().getDrawable(R.mipmap.noise_2));
-        animatedOverlayFrames.add(this.getResources().getDrawable(R.mipmap.noise_3));
-        animatedOverlayFrames.add(this.getResources().getDrawable(R.mipmap.noise_4));
-        animatedOverlayFrames.add(this.getResources().getDrawable(R.mipmap.noise_5));
+        animatedOverlayFrames.add(this.getResources().getDrawable(R.mipmap.silent_film_overlay_j));
+        animatedOverlayFrames.add(this.getResources().getDrawable(R.mipmap.silent_film_overlay_a));
+        animatedOverlayFrames.add(this.getResources().getDrawable(R.mipmap.silent_film_overlay_b));
+        animatedOverlayFrames.add(this.getResources().getDrawable(R.mipmap.silent_film_overlay_h));
+        animatedOverlayFrames.add(this.getResources().getDrawable(R.mipmap.silent_film_overlay_g));
+        animatedOverlayFrames.add(this.getResources().getDrawable(R.mipmap.silent_film_overlay_c));
+        animatedOverlayFrames.add(this.getResources().getDrawable(R.mipmap.silent_film_overlay_d));
+        animatedOverlayFrames.add(this.getResources().getDrawable(R.mipmap.silent_film_overlay_e));
+        animatedOverlayFrames.add(this.getResources().getDrawable(R.mipmap.silent_film_overlay_f));
+        animatedOverlayFrames.add(this.getResources().getDrawable(R.mipmap.silent_film_overlay_i));
         return animatedOverlayFrames;
     }
 

@@ -39,7 +39,7 @@ public class AnimatedOverlay extends Overlay {
     protected void configLayer(int frame) {
         if (frame > previousFrame + 2) {
             previousFrame = frame;
-            if (textureCounter >= 2) {
+            if (textureCounter >= textureIds.length-1) {
                 textureCounter = 0;
             } else {
                 textureCounter++;
