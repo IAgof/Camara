@@ -561,62 +561,64 @@ public class CameraEncoder implements SurfaceTexture.OnFrameAvailableListener, R
             if (!surfaceTexture.equals(mSurfaceTexture))
                 Log.w(TAG, "SurfaceTexture from OnFrameAvailable does not match saved SurfaceTexture!");
 
-            if (mRecording) {
-                mInputWindowSurface.makeCurrent();
-                if (TRACE) Trace.beginSection("drainVEncoder");
-                mVideoEncoder.drainEncoder(false);
-                if (TRACE) Trace.endSection();
-                if (mCurrentFilter != mNewFilter) {
-                    Filters.updateFilter(mFullScreen, mNewFilter);
-                    mCurrentFilter = mNewFilter;
-                    mIncomingSizeUpdated = true;
-                }
+            if (mFrameNum % 4 == 0) { //Coge uno de cada 4
+                if (mRecording) {
+                    mInputWindowSurface.makeCurrent();
+                    if (TRACE) Trace.beginSection("drainVEncoder");
+                    mVideoEncoder.drainEncoder(false);
+                    if (TRACE) Trace.endSection();
+                    if (mCurrentFilter != mNewFilter) {
+                        Filters.updateFilter(mFullScreen, mNewFilter);
+                        mCurrentFilter = mNewFilter;
+                        mIncomingSizeUpdated = true;
+                    }
 
-                if (mIncomingSizeUpdated) {
-                    mFullScreen.getProgram().setTexSize(mSessionConfig.getVideoWidth(), mSessionConfig.getVideoHeight());
-                    mIncomingSizeUpdated = false;
-                }
+                    if (mIncomingSizeUpdated) {
+                        mFullScreen.getProgram().setTexSize(mSessionConfig.getVideoWidth(), mSessionConfig.getVideoHeight());
+                        mIncomingSizeUpdated = false;
+                    }
 
-                GLES20.glEnable(GLES20.GL_BLEND);
-                GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
+                    GLES20.glEnable(GLES20.GL_BLEND);
+                    GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
 
-                surfaceTexture.getTransformMatrix(mTransform);
-                if (TRACE) Trace.beginSection("drawVEncoderFrame");
-                GLES20.glViewport(0, 0, mSessionConfig.getVideoWidth(), mSessionConfig.getVideoHeight());
-                mFullScreen.drawFrame(mTextureId, mTransform,true);
-                drawOverlayList();
-                if (watermark != null) {
-                    if (!watermark.isInitialized())
-                        watermark.initProgram();
-                    watermark.draw(mFrameNum);
-                }
-                if (TRACE) Trace.endSection();
-                if (!mEncodedFirstFrame) {
-                    mEncodedFirstFrame = true;
-                }
+                    surfaceTexture.getTransformMatrix(mTransform);
+                    if (TRACE) Trace.beginSection("drawVEncoderFrame");
+                    GLES20.glViewport(0, 0, mSessionConfig.getVideoWidth(), mSessionConfig.getVideoHeight());
+                    mFullScreen.drawFrame(mTextureId, mTransform, true);
+                    drawOverlayList();
+                    if (watermark != null) {
+                        if (!watermark.isInitialized())
+                            watermark.initProgram();
+                        watermark.draw(mFrameNum);
+                    }
+                    if (TRACE) Trace.endSection();
+                    if (!mEncodedFirstFrame) {
+                        mEncodedFirstFrame = true;
+                    }
 
-                if (mThumbnailRequestedOnFrame == mFrameNum) {
-                    mThumbnailRequested = true;
-                }
-                if (mThumbnailRequested) {
-                    saveFrameAsImage();
-                    mThumbnailRequested = false;
-                }
+                    if (mThumbnailRequestedOnFrame == mFrameNum) {
+                        mThumbnailRequested = true;
+                    }
+                    if (mThumbnailRequested) {
+                        saveFrameAsImage();
+                        mThumbnailRequested = false;
+                    }
 
-                mInputWindowSurface.setPresentationTime(mSurfaceTexture.getTimestamp());
-                mInputWindowSurface.swapBuffers();
+                    mInputWindowSurface.setPresentationTime(mSurfaceTexture.getTimestamp());
+                    mInputWindowSurface.swapBuffers();
 
-                if (mEosRequested) {
+                    if (mEosRequested) {
                     /*if (VERBOSE) */
-                    Log.d(TAG, "Stop: Sending last video frame. Draining encoder");
-                    mVideoEncoder.signalEndOfStream();
-                    mVideoEncoder.drainEncoder(true);
-                    mRecording = false;
-                    mEosRequested = false;
-                    releaseEncoder();
-                    mState = STATE.UNINITIALIZED;
-                    synchronized (mStopFence) {
-                        mStopFence.notify();
+                        Log.d(TAG, "Stop: Sending last video frame. Draining encoder");
+                        mVideoEncoder.signalEndOfStream();
+                        mVideoEncoder.drainEncoder(true);
+                        mRecording = false;
+                        mEosRequested = false;
+                        releaseEncoder();
+                        mState = STATE.UNINITIALIZED;
+                        synchronized (mStopFence) {
+                            mStopFence.notify();
+                        }
                     }
                 }
             }
@@ -1027,9 +1029,9 @@ public class CameraEncoder implements SurfaceTexture.OnFrameAvailableListener, R
 
         android.hardware.Camera.getCameraInfo(mCurrentCamera, info);
 
-        int degrees=0;
+        int degrees = 0;
 
-        mCurrentCameraRotation= info.orientation;
+        mCurrentCameraRotation = info.orientation;
         int rotation = 0;
         switch (rotation) {
             case Surface.ROTATION_0:
