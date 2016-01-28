@@ -90,7 +90,6 @@ public class RecorderSample extends Activity {
     protected void onResume() {
         super.onResume();
         EventBus.getDefault().register(this);
-
     }
 
     @Override
@@ -98,7 +97,6 @@ public class RecorderSample extends Activity {
         super.onPause();
         EventBus.getDefault().unregister(this);
     }
-
 
     @Override
     protected void onStop() {

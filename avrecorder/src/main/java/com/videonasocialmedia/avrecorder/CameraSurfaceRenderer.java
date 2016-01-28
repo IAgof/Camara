@@ -110,37 +110,33 @@ class CameraSurfaceRenderer implements GLSurfaceView.Renderer {
                 mCameraEncoder.logSavedEglState();
             }
         }
-        Log.i("Frame number",""+mFrameCount % 3);
         //if (mFrameCount % 3 != 0) {
-            if (mCurrentFilter != mNewFilter) {
-                Filters.updateFilter(mFullScreenCamera, mNewFilter);
-                mCurrentFilter = mNewFilter;
-                mIncomingSizeUpdated = true;
-            }
+        if (mCurrentFilter != mNewFilter) {
+            Filters.updateFilter(mFullScreenCamera, mNewFilter);
+            mCurrentFilter = mNewFilter;
+            mIncomingSizeUpdated = true;
+        }
 
-            if (mIncomingSizeUpdated) {
-                mFullScreenCamera.getProgram().setTexSize(mIncomingWidth, mIncomingHeight);
-                mIncomingSizeUpdated = false;
-                Log.i(TAG, "setTexSize on display Texture");
-            }
+        if (mIncomingSizeUpdated) {
+            mFullScreenCamera.getProgram().setTexSize(mIncomingWidth, mIncomingHeight);
+            mIncomingSizeUpdated = false;
+            Log.i(TAG, "setTexSize on display Texture");
+        }
 
-            // Draw the video frame.
-            if (mCameraEncoder.isSurfaceTextureReadyForDisplay()) {
-                mCameraEncoder.getSurfaceTextureForDisplay().updateTexImage();
-                mCameraEncoder.getSurfaceTextureForDisplay().getTransformMatrix(mSTMatrix);
-                //GLES20.glViewport(0, 0, screenWidth, screenHeight);
-                mFullScreenCamera.drawFrame(mCameraTextureId, mSTMatrix, true);
-                drawOverlayList();
-                if (watermark != null) {
-                    if (!watermark.isInitialized())
-                        watermark.initProgram();
-                    watermark.draw(mFrameCount);
-                }
-
-                GLES20.glDisable(GLES20.GL_BLEND);
+        // Draw the video frame.
+        if (mCameraEncoder.isSurfaceTextureReadyForDisplay()) {
+            mCameraEncoder.getSurfaceTextureForDisplay().updateTexImage();
+            mCameraEncoder.getSurfaceTextureForDisplay().getTransformMatrix(mSTMatrix);
+            GLES20.glViewport(0, 0, screenWidth, screenHeight);
+            mFullScreenCamera.drawFrame(mCameraTextureId, mSTMatrix, true);
+            drawOverlayList();
+            if (watermark != null) {
+                if (!watermark.isInitialized())
+                    watermark.initProgram();
+                watermark.draw(mFrameCount);
             }
-        //+
-        // }
+            GLES20.glDisable(GLES20.GL_BLEND);
+        }
         mFrameCount++;
     }
 

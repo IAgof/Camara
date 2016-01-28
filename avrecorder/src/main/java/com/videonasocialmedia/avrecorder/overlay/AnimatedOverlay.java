@@ -27,7 +27,6 @@ public class AnimatedOverlay extends Overlay {
 
         this.overlayImages = overlayImages;
         textureIds = new int[overlayImages.size()];
-
     }
 
     @Override
