@@ -1,9 +1,7 @@
 package com.videonasocialmedia.avrecorder.overlay;
 
 import android.graphics.drawable.Drawable;
-import android.opengl.GLES20;
 
-import com.videonasocialmedia.avrecorder.FullFrameRect;
 import com.videonasocialmedia.avrecorder.GlUtil;
 
 import java.util.List;
@@ -45,26 +43,13 @@ public class AnimatedOverlay extends Overlay {
             previousFrame = frame;
 
             framesPaintingCurrentLayer = randInt(2, 4);
-            textureCounter= randInt(0,textureIds.length-1);
-
-
-//            if (textureCounter >= textureIds.length-1) {
-//                textureCounter = 0;
-//            } else {
-//                textureCounter++;
-//            }
-
+            textureCounter = randInt(0, textureIds.length - 1);
         }
         super.setTextureId(textureIds[textureCounter]);
     }
 
     private int randInt(int min, int max) {
-
-        // nextInt is normally exclusive of the top value,
-        // so add 1 to make it inclusive
-        int randomNum = random.nextInt((max - min) + 1) + min;
-
-        return randomNum;
+        return random.nextInt(( max - min ) + 1) + min;
     }
 
     @Override
