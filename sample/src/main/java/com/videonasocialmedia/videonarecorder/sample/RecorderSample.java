@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.util.Log;
-import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.ToggleButton;
 
@@ -15,8 +14,6 @@ import com.videonasocialmedia.avrecorder.Filters;
 import com.videonasocialmedia.avrecorder.FullFrameRect;
 import com.videonasocialmedia.avrecorder.SessionConfig;
 import com.videonasocialmedia.avrecorder.event.CameraEncoderResetEvent;
-import com.videonasocialmedia.avrecorder.event.CameraOpenedEvent;
-import com.videonasocialmedia.avrecorder.view.AspectFrameLayout;
 import com.videonasocialmedia.avrecorder.view.GLCameraEncoderView;
 import com.videonasocialmedia.videonarecorder.R;
 
@@ -57,7 +54,7 @@ public class RecorderSample extends Activity {
             recorder.setPreviewDisplay(cameraPreview);
             List<Drawable> animatedOverlayFrames = getAnimatedOverlay();
             recorder.addAnimatedOverlayFilter(animatedOverlayFrames);
-            recorder.applyFilter(Filters.FILTER_SEPIA);
+            recorder.applyFilter(Filters.FILTER_AQUA);
             firstTimeRecording = true;
         } catch (IOException e) {
             Log.e("RecorderSample", e.getMessage());

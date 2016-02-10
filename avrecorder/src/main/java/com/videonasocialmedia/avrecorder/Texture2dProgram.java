@@ -311,9 +311,9 @@ public class Texture2dProgram {
                     "varying vec2 vTextureCoord;\n" +
                     "uniform samplerExternalOES sTexture;\n" +
                     "void main() {\n" +
-                    "vec3 irgb = texture2D(sTexture, vTextureCoord).rgb;\n"+
-                    "float gray = dot(irgb, vec3(0.299, 0.587, 0.114));\n" +
-                    "gl_FragColor = vec4(gray * vec3(0, 0.749, 1.0), 1.0);\n" +
+                    "    vec4 tc = texture2D(sTexture, vTextureCoord);\n" +
+                    "    float color = tc.r * 0.3 + tc.g * 0.59 + tc.b * 0.11;\n" +
+                    "    gl_FragColor = vec4(color-0.2, color, color+0.13, 1.0);\n" +
                     "}\n";
 
     //https://github.com/technicolorenvy/Processing-Libraries/blob/master/GLGraphics/examples/Integration/MovieFilters/data/Posterize.glsl
