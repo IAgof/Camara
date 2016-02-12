@@ -3,13 +3,27 @@ package com.videonasocialmedia.avrecorder.overlay;
 import android.graphics.drawable.Drawable;
 import android.opengl.GLES20;
 
+import com.videonasocialmedia.avrecorder.GlUtil;
+
 /**
- * Created by jca on 1/12/15.
+ * Full Screen image filter. A
+ * <p/>
+ * This class should dissapear the moment we figure out how to do it with shaders
  */
 public class Filter extends Overlay {
 
+    Drawable filterImage;
+
     public Filter(Drawable filterImage, int height, int width) {
-        super(filterImage, height, width, 0, 0);
+        super(height, width, 0, 0);
+        this.filterImage = filterImage;
+    }
+
+    @Override
+    protected void initTextures() {
+        int textureId = GlUtil.createTextureFromDrawable(filterImage);
+        filterImage = null;
+        setTextureId(textureId);
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.videonasocialmedia.videonarecorder.sample;
 
 import android.app.Activity;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
@@ -13,12 +14,17 @@ import com.videonasocialmedia.avrecorder.FullFrameRect;
 import com.videonasocialmedia.avrecorder.SessionConfig;
 import com.videonasocialmedia.avrecorder.event.CameraEncoderResetEvent;
 import com.videonasocialmedia.avrecorder.event.CameraOpenedEvent;
+import com.videonasocialmedia.avrecorder.overlay.Filter;
+import com.videonasocialmedia.avrecorder.overlay.Overlay;
+import com.videonasocialmedia.avrecorder.overlay.Sticker;
+import com.videonasocialmedia.avrecorder.overlay.animation.StickerAnimator;
 import com.videonasocialmedia.avrecorder.view.AspectFrameLayout;
 import com.videonasocialmedia.avrecorder.view.GLCameraEncoderView;
 import com.videonasocialmedia.videonarecorder.R;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.TreeMap;
 
 import de.greenrobot.event.EventBus;
 
@@ -46,10 +52,32 @@ public class RecorderSample extends Activity {
                 640, 480, 5 * 1000 * 1000, 1, 48000, 192000);
         try {
             recorder = new AVRecorder(config);
-
-            GLCameraEncoderView cameraPreview =
-                    (GLCameraEncoderView) findViewById(R.id.cameraPreview);
             recorder.setPreviewDisplay(cameraPreview);
+            Drawable image = null;
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+                image = this.getDrawable(R.mipmap.ic_launcher);
+            }else{
+                image = this.getResources().getDrawable(R.mipmap.ic_launcher);
+            }
+            Sticker sticker=recorder.addSticker(image, 0, 0, 128, 128);
+
+            TreeMap<Long, StickerAnimator.Coord>positionRoute= new TreeMap<>();
+            positionRoute.put(0L,new StickerAnimator.Coord(0,10));
+            positionRoute.put(500L,new StickerAnimator.Coord(20,10));
+            positionRoute.put(1000L,new StickerAnimator.Coord(40,10));
+            positionRoute.put(1500L,new StickerAnimator.Coord(60,10));
+            positionRoute.put(2000L,new StickerAnimator.Coord(80,10));
+            positionRoute.put(2500L,new StickerAnimator.Coord(100,10));
+            positionRoute.put(3500L,new StickerAnimator.Coord(120,30));
+            positionRoute.put(4000L,new StickerAnimator.Coord(140,50));
+            positionRoute.put(4500L,new StickerAnimator.Coord(160,70));
+            positionRoute.put(5000L,new StickerAnimator.Coord(160,90));
+            positionRoute.put(5500L,new StickerAnimator.Coord(160,110));
+            positionRoute.put(6000L,new StickerAnimator.Coord(160,130));
+            positionRoute.put(8000L,new StickerAnimator.Coord(160,150));
+
+            StickerAnimator animator= new StickerAnimator(sticker,positionRoute,null,true);
+            recorder.registerAnimator(animator);
 
             firstTimeRecording = true;
         } catch (IOException e) {

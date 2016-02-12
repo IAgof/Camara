@@ -13,19 +13,17 @@ import com.videonasocialmedia.avrecorder.Texture2dProgram;
  */
 public abstract class Overlay {
 
-    Drawable overlayImage;
     private float[] IDENTITY_MATRIX = new float[16];
     protected FullFrameRect overlayLayer;
-    private int height;
-    private int width;
-    private int positionX;
-    private int positionY;
+    protected int height;
+    protected int width;
+    protected int positionX;
+    protected int positionY;
     private int textureId;
 
-    public Overlay(Drawable overlayImage, int height, int width, int positionX, int positionY) {
+    public Overlay( int height, int width, int positionX, int positionY) {
         Matrix.setIdentityM(IDENTITY_MATRIX, 0);
         Matrix.scaleM(IDENTITY_MATRIX, 0, 1, -1, 1);
-        this.overlayImage = overlayImage;
         this.height = height;
         this.width = width;
         this.positionX = positionX;
@@ -43,10 +41,7 @@ public abstract class Overlay {
         overlayLayer = new FullFrameRect(program);
     }
 
-    protected void initTextures() {
-        textureId = GlUtil.createTextureFromDrawable(overlayImage);
-    }
-
+    protected abstract void initTextures();
 
     public final void draw(int frame) {
         setGlViewportSize();

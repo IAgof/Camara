@@ -20,7 +20,10 @@ import com.videonasocialmedia.avrecorder.event.CameraOpenedEvent;
 import com.videonasocialmedia.avrecorder.overlay.AnimatedOverlay;
 import com.videonasocialmedia.avrecorder.overlay.Filter;
 import com.videonasocialmedia.avrecorder.overlay.Overlay;
+import com.videonasocialmedia.avrecorder.overlay.Sticker;
 import com.videonasocialmedia.avrecorder.overlay.Watermark;
+import com.videonasocialmedia.avrecorder.overlay.animation.AnimatorController;
+import com.videonasocialmedia.avrecorder.overlay.animation.StickerAnimator;
 import com.videonasocialmedia.avrecorder.view.GLCameraEncoderView;
 import com.videonasocialmedia.avrecorder.view.GLCameraView;
 
@@ -42,7 +45,7 @@ public class CameraEncoder implements SurfaceTexture.OnFrameAvailableListener, R
 
     private static final String TAG = "CameraEncoder";
     private static final boolean TRACE = true;         // Systrace
-    private static final boolean VERBOSE = true;       // Lots of logging
+    private static final boolean VERBOSE = BuildConfig.DEBUG;       // Lots of logging
     // EncoderHandler Message types (Message#what)
     private static final int MSG_FRAME_AVAILABLE = 2;
     private static final int MSG_SET_SURFACE_TEXTURE = 3;
@@ -61,9 +64,7 @@ public class CameraEncoder implements SurfaceTexture.OnFrameAvailableListener, R
     private WindowSurface mInputWindowSurface;
     private EglCore mEglCore;
     private FullFrameRect mFullScreen;
-    private FullFrameRect mFullScreenOverlay;
     private int mTextureId;
-    //    private int mOverlayTextureId;
     private int mFrameNum;
     private VideoEncoderCore mVideoEncoder;
     private Camera mCamera;
@@ -97,12 +98,15 @@ public class CameraEncoder implements SurfaceTexture.OnFrameAvailableListener, R
     private List<Overlay> overlayList;
     private Watermark watermark;
 
+    AnimatorController animatorController;
+
     public CameraEncoder(SessionConfig config) {
         mState = STATE.INITIALIZING;
         init(config);
         mEventBus = EventBus.getDefault();
         mEglSaver = new EglStateSaver();
         startEncodingThread();
+        animatorController = new AnimatorController();
         mState = STATE.INITIALIZED;
     }
 
@@ -331,7 +335,7 @@ public class CameraEncoder implements SurfaceTexture.OnFrameAvailableListener, R
 
     public boolean isSurfaceTextureReadyForDisplay() {
         synchronized (mSurfaceTextureFence) {
-            return !(mSurfaceTexture == null);
+            return !( mSurfaceTexture == null );
         }
     }
 
@@ -348,24 +352,30 @@ public class CameraEncoder implements SurfaceTexture.OnFrameAvailableListener, R
         }
     }
 
-    public void addOverlayFilter(Drawable overlayImage, int width, int height) {
+    public Overlay addOverlayFilter(Drawable overlayImage, int width, int height) {
         Overlay overlayToAdd = new Filter(overlayImage, height, width);
-        if (overlayList == null) {
-            overlayList = new ArrayList<>();
-            if (mDisplayRenderer != null)
-                mDisplayRenderer.setOverlayList(overlayList);
-        }
+        addOverlayFilter(overlayToAdd);
+        return overlayToAdd;
+    }
+
+    public void addOverlayFilter(Overlay overlayToAdd) {
+        initOverlayList();
         overlayList.add(overlayToAdd);
     }
 
-    public void addAnimatedOverlayFilter(List<Drawable> images, int videoWidth, int videoHeight) {
-        Overlay overlayToAdd = new AnimatedOverlay(images, videoHeight, videoWidth);
+    private void initOverlayList() {
         if (overlayList == null) {
             overlayList = new ArrayList<>();
             if (mDisplayRenderer != null)
                 mDisplayRenderer.setOverlayList(overlayList);
         }
+    }
+
+    public Overlay addAnimatedOverlayFilter(List<Drawable> images, int videoWidth, int videoHeight) {
+        Overlay overlayToAdd = new AnimatedOverlay(images, videoHeight, videoWidth);
+        initOverlayList();
         overlayList.add(overlayToAdd);
+        return overlayToAdd;
     }
 
 
@@ -391,18 +401,33 @@ public class CameraEncoder implements SurfaceTexture.OnFrameAvailableListener, R
     }
 
     private int[] calculateDefaultWatermarkSize() {
-        int width = (mSessionConfig.getVideoWidth() * 265) / 1280;
-        int height = (mSessionConfig.getVideoHeight() * 36) / 720;
+        int width = ( mSessionConfig.getVideoWidth() * 265 ) / 1280;
+        int height = ( mSessionConfig.getVideoHeight() * 36 ) / 720;
         return new int[]{width, height};
     }
 
     private int calculateWatermarkDefaultPosition() {
-        return (mSessionConfig.getVideoWidth() * 15) / 1280;
+        return ( mSessionConfig.getVideoWidth() * 15 ) / 1280;
     }
 
     public void removeWaterMark() {
         watermark = null;
         mDisplayRenderer.removeWatermark();
+    }
+
+    Sticker addSitcker(Drawable image, int x, int y, int width, int height) {
+        initOverlayList();
+        Sticker sticker = new Sticker(image, height, width, x, y);
+        overlayList.add(sticker);
+        return sticker;
+    }
+
+    void registerStickerAnimator(StickerAnimator animator) {
+        animatorController.register(animator);
+    }
+
+    void removeStickerAnimator(StickerAnimator animator){
+        animatorController.remove(animator);
     }
 
     /**
@@ -557,6 +582,7 @@ public class CameraEncoder implements SurfaceTexture.OnFrameAvailableListener, R
                 return;
             }
             mFrameNum++;
+            animatorController.updateStickers();
             // Too much info on screen if (VERBOSE && (mFrameNum % 30 == 0)) Log.i(TAG, "handleFrameAvailable");
             if (!surfaceTexture.equals(mSurfaceTexture))
                 Log.w(TAG, "SurfaceTexture from OnFrameAvailable does not match saved SurfaceTexture!");
@@ -703,7 +729,7 @@ public class CameraEncoder implements SurfaceTexture.OnFrameAvailableListener, R
                     Log.i("CameraRelease", "Opening camera and attaching to SurfaceTexture");
                 mHandler.sendMessage(mHandler.obtainMessage(MSG_REOPEN_CAMERA));
             } else {
-                Log.w("CameraRelease", "Didn't try to open camera onHAResume. rec: " + mRecording + " mSurfaceTexture ready? " + (mSurfaceTexture == null ? " no" : " yes"));
+                Log.w("CameraRelease", "Didn't try to open camera onHAResume. rec: " + mRecording + " mSurfaceTexture ready? " + ( mSurfaceTexture == null ? " no" : " yes" ));
             }
         }
 
@@ -874,7 +900,7 @@ public class CameraEncoder implements SurfaceTexture.OnFrameAvailableListener, R
 
 
             if (VERBOSE)
-                Log.i("CameraRelease", "Opened / Started Camera preview. mDisplayView ready? " + (mDisplayView == null ? " no" : " yes"));
+                Log.i("CameraRelease", "Opened / Started Camera preview. mDisplayView ready? " + ( mDisplayView == null ? " no" : " yes" ));
             if (mDisplayView != null) {
                 configureDisplayView();
             } else {
@@ -915,7 +941,7 @@ public class CameraEncoder implements SurfaceTexture.OnFrameAvailableListener, R
             }
             if (mCamera == null) {
                 if (targetCameraType == requestedCameraType)
-                    targetCameraType = (requestedCameraType == Camera.CameraInfo.CAMERA_FACING_BACK ? Camera.CameraInfo.CAMERA_FACING_FRONT : Camera.CameraInfo.CAMERA_FACING_BACK);
+                    targetCameraType = ( requestedCameraType == Camera.CameraInfo.CAMERA_FACING_BACK ? Camera.CameraInfo.CAMERA_FACING_FRONT : Camera.CameraInfo.CAMERA_FACING_BACK );
                 else
                     triedAllCameras = true;
             }
@@ -944,7 +970,7 @@ public class CameraEncoder implements SurfaceTexture.OnFrameAvailableListener, R
         }
 
         List<String> flashModes = parms.getSupportedFlashModes();
-        String flashMode = (mDesiredFlash != null) ? mDesiredFlash : mCurrentFlash;
+        String flashMode = ( mDesiredFlash != null ) ? mDesiredFlash : mCurrentFlash;
         if (isValidFlashMode(flashModes, flashMode)) {
             parms.setFlashMode(flashMode);
         }
@@ -971,9 +997,9 @@ public class CameraEncoder implements SurfaceTexture.OnFrameAvailableListener, R
         parms.getPreviewFpsRange(fpsRange);
         String previewFacts = mCameraPreviewSize.width + "x" + mCameraPreviewSize.height;
         if (fpsRange[0] == fpsRange[1]) {
-            previewFacts += " @" + (fpsRange[0] / 1000.0) + "fps";
+            previewFacts += " @" + ( fpsRange[0] / 1000.0 ) + "fps";
         } else {
-            previewFacts += " @" + (fpsRange[0] / 1000.0) + " - " + (fpsRange[1] / 1000.0) + "fps";
+            previewFacts += " @" + ( fpsRange[0] / 1000.0 ) + " - " + ( fpsRange[1] / 1000.0 ) + "fps";
         }
         if (VERBOSE) Log.i(TAG, "Camera preview set: " + previewFacts);
 
@@ -1003,9 +1029,9 @@ public class CameraEncoder implements SurfaceTexture.OnFrameAvailableListener, R
      */
     private void configureDisplayView() {
         if (mDisplayView instanceof GLCameraEncoderView)
-            ((GLCameraEncoderView) mDisplayView).setCameraEncoder(this);
+            ( (GLCameraEncoderView) mDisplayView ).setCameraEncoder(this);
         else if (mDisplayView instanceof GLCameraView)
-            ((GLCameraView) mDisplayView).setCamera(mCamera);
+            ( (GLCameraView) mDisplayView ).setCamera(mCamera);
     }
 
     /**
@@ -1013,9 +1039,9 @@ public class CameraEncoder implements SurfaceTexture.OnFrameAvailableListener, R
      */
     private void releaseDisplayView() {
         if (mDisplayView instanceof GLCameraEncoderView) {
-            ((GLCameraEncoderView) mDisplayView).releaseCamera();
+            ( (GLCameraEncoderView) mDisplayView ).releaseCamera();
         } else if (mDisplayView instanceof GLCameraView)
-            ((GLCameraView) mDisplayView).releaseCamera();
+            ( (GLCameraView) mDisplayView ).releaseCamera();
     }
 
     private void initDisplayOrientation() {
@@ -1043,11 +1069,11 @@ public class CameraEncoder implements SurfaceTexture.OnFrameAvailableListener, R
 
         int result;
         if (info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
-            result = (info.orientation + degrees) % 360;
-            result = (360 - result) % 360;  // compensate the mirror
+            result = ( info.orientation + degrees ) % 360;
+            result = ( 360 - result ) % 360;  // compensate the mirror
             Log.d(TAG, " front camera " + result);
         } else {  // back-facing
-            result = (info.orientation - degrees + 360) % 360;
+            result = ( info.orientation - degrees + 360 ) % 360;
             Log.d(TAG, " back camera " + result);
         }
         mCamera.setDisplayOrientation(result);
@@ -1271,7 +1297,7 @@ public class CameraEncoder implements SurfaceTexture.OnFrameAvailableListener, R
      * @return returns the flash mode set in the camera
      */
     public String getFlashMode() {
-        return (mDesiredFlash != null) ? mDesiredFlash : mCurrentFlash;
+        return ( mDesiredFlash != null ) ? mDesiredFlash : mCurrentFlash;
     }
 
     private void postCameraOpenedEvent(Parameters params, int cameraInfoOrientation) {
