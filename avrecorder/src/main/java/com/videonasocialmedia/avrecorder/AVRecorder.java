@@ -3,6 +3,9 @@ package com.videonasocialmedia.avrecorder;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
 
+import com.videonasocialmedia.avrecorder.overlay.Overlay;
+import com.videonasocialmedia.avrecorder.overlay.Sticker;
+import com.videonasocialmedia.avrecorder.overlay.animation.StickerAnimator;
 import com.videonasocialmedia.avrecorder.view.GLCameraView;
 
 import java.io.IOException;
@@ -74,20 +77,36 @@ public class AVRecorder {
      *
      * @param image the image shown on the layer
      */
-    public void addOverlayFilter(Drawable image) {
-        mCamEncoder.addOverlayFilter(image, mConfig.getVideoWidth(), mConfig.getVideoHeight());
+    public Overlay addOverlayFilter(Drawable image) {
+        return mCamEncoder.addOverlayFilter(image, mConfig.getVideoWidth(), mConfig.getVideoHeight());
     }
 
-    public void addAnimatedOverlayFilter (List<Drawable> images){
-        mCamEncoder.addAnimatedOverlayFilter(images, mConfig.getVideoWidth(), mConfig.getVideoHeight());
+    public Sticker addSticker(Drawable image, int x, int y, int width, int height){
+        return mCamEncoder.addSitcker(image, x, y, width, height);
+    }
+
+    public void removeSticker(Sticker sticker){
+        //TODO remove sticker and check if an animator is bind to it
+    }
+
+    public void registerAnimator(StickerAnimator animator){
+        mCamEncoder.registerStickerAnimator(animator);
+    }
+
+    public void deleteAnimator(StickerAnimator animator){
+        mCamEncoder.removeStickerAnimator(animator);
+    }
+
+    public Overlay addAnimatedOverlayFilter (List<Drawable> images){
+       return mCamEncoder.addAnimatedOverlayFilter(images, mConfig.getVideoWidth(), mConfig.getVideoHeight());
     }
 
     public void setWatermark(Drawable watermarkImage, boolean showInPreview) {
-        mCamEncoder.addWatermark(watermarkImage, showInPreview);
+       mCamEncoder.addWatermark(watermarkImage, showInPreview);
     }
 
     /**
-     * Set a watermark hide in the preview
+     * Set a watermark hided in the preview
      *
      * @param watermarkImage
      */
@@ -95,9 +114,13 @@ public class AVRecorder {
         mCamEncoder.addWatermark(watermarkImage, false);
     }
 
+    public void removeWatermark(){
+        mCamEncoder.removeWaterMark();
+    }
+
     //TODO define how to identify a single overlay;
-    public void removeOverlay() {
-        mCamEncoder.removeOverlayFilter(null);
+    public void removeOverlay(Overlay overlay) {
+        mCamEncoder.removeOverlayFilter(overlay);
     }
 
     /**

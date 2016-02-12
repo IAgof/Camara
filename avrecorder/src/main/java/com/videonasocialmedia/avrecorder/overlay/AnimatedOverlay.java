@@ -19,11 +19,9 @@ public class AnimatedOverlay extends Overlay {
     private int textureCounter;
 
     public AnimatedOverlay(List<Drawable> overlayImages, int height, int width) {
-        super(overlayImages.get(0), height, width, 0, 0);
-
+        super(height, width, 0, 0);
         this.overlayImages = overlayImages;
         textureIds = new int[overlayImages.size()];
-
     }
 
     @Override
@@ -32,6 +30,7 @@ public class AnimatedOverlay extends Overlay {
             textureIds[textureIndex] =
                     GlUtil.createTextureFromDrawable(overlayImages.get(textureIndex));
         }
+        overlayImages=null;
     }
 
 
